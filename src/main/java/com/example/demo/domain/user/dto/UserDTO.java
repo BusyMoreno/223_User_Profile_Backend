@@ -41,9 +41,9 @@ public class UserDTO extends AbstractDTO {
           regexp = "https?://.*",
           message = "Invalid URL"
   )
-  private String profilePicture;
+  private String profileImageUrl;
 
-  public UserDTO(UUID id, String firstName, String lastName, String email, Set<RoleDTO> roles, String address, LocalDate birthDate, String profilePicture) {
+  public UserDTO(UUID id, String firstName, String lastName, String email, Set<RoleDTO> roles, String address, LocalDate birthDate, String profileImageUrl) {
     super(id);
     this.firstName = firstName;
     this.lastName = lastName;
@@ -51,7 +51,7 @@ public class UserDTO extends AbstractDTO {
     this.roles = roles;
     this.address = address;
     this.birthDate = birthDate;
-    this.profilePicture = profilePicture;
+    this.profileImageUrl = profileImageUrl;
   }
 
 }
