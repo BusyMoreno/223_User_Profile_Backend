@@ -4,13 +4,19 @@ import com.example.demo.core.generic.AbstractServiceImpl;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl extends AbstractServiceImpl<User> implements UserService {
@@ -58,26 +64,37 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return age;
     }
 
+    @Autowired
+    private UserRepository userRepository;
+
+    public Page<User> getPaginatedUsers(int page, int size, List<User> users) {
+        int start = page * size;
+        int end = Math.min(start + size, users.size());
+        List<User> pagedList = users.subList(start, end);
+        return new PageImpl<>(pagedList, PageRequest.of(page, size), users.size());
+    }
+
 
     //This method is going to filter users based on age and/or name
-    //This function is a admin only function
-    public List<User> filterUsers(
-            Integer minAge,
-            Integer maxAge,
-            String firstName,
-            String lastName
+    //This function is an admin only function
+    public List<User> getFilteredPaginatedAndSortedUsers(
+            @RequestParam(required = false) Integer minAge,
+            @RequestParam(required = false) Integer maxAge,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
     ) {
-        return repository.findAll()
+        List<User> filteredList = repository.findAll()
                 .stream()
-                .filter(u -> firstName == null
-                        || u.getFirstName().equalsIgnoreCase(firstName))
-                .filter(u -> lastName == null
-                        || u.getLastName().equalsIgnoreCase(lastName))
-                .filter(u -> minAge == null
-                        || calculateAge(u.getBirthDate()) >= minAge)
-                .filter(u -> maxAge == null
-                        || calculateAge(u.getBirthDate()) <= maxAge)
-                .toList();
+                .filter(u -> firstName == null || u.getFirstName().equalsIgnoreCase(firstName))
+                .filter(u -> lastName == null || u.getLastName().equalsIgnoreCase(lastName))
+                .filter(u -> minAge == null || calculateAge(u.getBirthDate()) >= minAge)
+                .filter(u -> maxAge == null || calculateAge(u.getBirthDate()) <= maxAge).sorted(Comparator.comparing(User::getBirthDate).thenComparing(User::getFirstName)).toList();
+
+        Page<User> myPage = getPaginatedUsers(page, size, filteredList);
+
+        return myPage.getContent();
     }
 
 

@@ -9,11 +9,6 @@ import java.util.UUID;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,16 +67,18 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/admin/search")
     @PreAuthorize("hasAuthority('USER_READ')")
     public ResponseEntity<List<UserDTO>> filterUsers(
             @RequestParam(required = false) Integer minAge,
             @RequestParam(required = false) Integer maxAge,
             @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName
+            @RequestParam(required = false) String lastName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
     ) {
-        List<User> users = userService.filterUsers(
-                minAge, maxAge, firstName, lastName
+        List<User> users = userService.getFilteredPaginatedAndSortedUsers(
+                minAge, maxAge, firstName, lastName, page,size
         );
 
         return ResponseEntity.ok(userMapper.toDTOs(users));
