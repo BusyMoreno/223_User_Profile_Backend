@@ -9,41 +9,76 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class UserServiceImpl extends AbstractServiceImpl<User> implements UserService {
 
-  private final PasswordEncoder passwordEncoder;
-  private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
-  @Autowired
-  public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, RoleService roleService) {
-    super(repository);
-    this.passwordEncoder = passwordEncoder;
-      this.roleService = roleService;
-  }
+    @Autowired
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, RoleService roleService) {
+        super(repository);
+        this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
+    }
 
-  @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    return ((UserRepository) repository).findByEmail(email)
-                                        .map(UserDetailsImpl::new)
-                                        .orElseThrow(() -> new UsernameNotFoundException(email));
-  }
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return ((UserRepository) repository).findByEmail(email)
+                .map(UserDetailsImpl::new)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+    }
 
-  @Override
-  public User register(User user) {
-    user.setPassword(passwordEncoder.encode(user.getPassword()));
-    Role defaultRole=roleService.findById(UUID.fromString("d29e709c-0ff1-4f4c-a7ef-09f656c390f1"));//Default role
-    user.setRoles(Set.of(defaultRole));
-    return save(user);
-  }
-  @Override
-  //This Method can be used for development and testing. the Password for the user will be set to "1234"
-  public User registerUser(User user){
-    user.setPassword(passwordEncoder.encode("1234"));
-    return save(user);
-  }
+    @Override
+    public User register(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Role defaultRole = roleService.findById(UUID.fromString("d29e709c-0ff1-4f4c-a7ef-09f656c390f1"));//Default role
+        user.setRoles(Set.of(defaultRole));
+        return save(user);
+    }
+
+    @Override
+    //This Method can be used for development and testing. the Password for the user will be set to "1234"
+    public User registerUser(User user) {
+        user.setPassword(passwordEncoder.encode("1234"));
+        return save(user);
+    }
+
+    //Show all users without any filter omn
+    public List<User> findAll() {
+        return repository.findAll();
+    }
+
+    public Integer calculateAge(LocalDate birthDate) {
+        LocalDate today = LocalDate.now();
+        Integer age = today.getYear() - birthDate.getYear();
+        return age;
+    }
+
+
+    //This method is going to filter users based on age and/or name
+    //This function is a admin only function
+    public List<User> filterUsers(
+            Integer minAge,
+            Integer maxAge,
+            String firstName,
+            String lastName
+    ) {
+        return repository.findAll()
+                .stream()
+                .filter(u -> firstName == null
+                        || u.getFirstName().equalsIgnoreCase(firstName))
+                .filter(u -> lastName == null
+                        || u.getLastName().equalsIgnoreCase(lastName))
+                .filter(u -> minAge == null
+                        || calculateAge(u.getBirthDate()) >= minAge)
+                .filter(u -> maxAge == null
+                        || calculateAge(u.getBirthDate()) <= maxAge)
+                .toList();
+    }
+
 
 }
