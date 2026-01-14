@@ -2,6 +2,8 @@ package com.example.demo.domain.user;
 
 import com.example.demo.core.generic.AbstractEntity;
 import com.example.demo.domain.role.Role;
+
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -37,18 +39,31 @@ public class User extends AbstractEntity {
   @Column(name = "password")
   private String password;
 
+  @Column(name = "address")
+  private String address;
+
+  @Column(name = "birthDate")
+  private LocalDate birthDate;
+
+  @Column(name = "profileImageUrl")
+  private String profileImageUrl;
+
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "users_role", joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
              inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Set<Role> roles = new HashSet<>();
 
-  public User(UUID id, String firstName, String lastName, String email, String password, Set<Role> roles) {
+  public User(UUID id, String firstName, String lastName, String email, String password, Set<Role> roles, String profileImageUrl, LocalDate birthDate, String address) {
     super(id);
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.password = password;
     this.roles = roles;
+    this.profileImageUrl = profileImageUrl;
+    this.birthDate = birthDate;
+    this.address = address;
   }
 
 }
