@@ -99,8 +99,6 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return myPage.getContent();
     }
 
-    private UserRepository userRepository;
-
     public void deleteUserById(UUID id) {
         userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no user with this id: " + id.toString()));
         userRepository.deleteById(id);

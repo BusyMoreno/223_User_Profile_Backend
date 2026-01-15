@@ -91,15 +91,6 @@ public class UserController {
         return ResponseEntity.ok(userMapper.toDTOs(users));
     }
 
-
-
-  @DeleteMapping("/{id}")
-  @PreAuthorize("hasAuthority('USER_DELETE')")
-  public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
-    userService.deleteById(id);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
   @PostMapping("/edit")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<User> createProfile(
