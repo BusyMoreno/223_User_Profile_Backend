@@ -67,7 +67,7 @@ public class UserController {
 
     //This function is an admin only function it is able to delete any user by ID
     @DeleteMapping("/admin/{id}")
-    @PreAuthorize("hasAuthority('USER_DELETE')")
+    @PreAuthorize("hasAuthority('USER_DEACTIVATE')")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
         userService.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -93,7 +93,7 @@ public class UserController {
     }
 
   @PostMapping("/edit")
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasAuthority('USER_CREATE')")
   public ResponseEntity<User> createProfile(
           @AuthenticationPrincipal User user,
           @Valid @RequestBody UserDTO dto
@@ -105,12 +105,14 @@ public class UserController {
   }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasAuthority('USER_READ')")
     public UserDTO getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return userServiceImpl.getOwnProfile(userDetails.getUsername());
     }
 
     @PutMapping("/editUser")
-    public UserDTO updateProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserDTO dto) {
+    @PreAuthorize("hasAuthority('USER_MODIFY')")
+    public UserDTO updateOwnProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserDTO dto) {
         return userServiceImpl.updateOwnProfile(userDetails.getUsername(), dto);
     }
 }
