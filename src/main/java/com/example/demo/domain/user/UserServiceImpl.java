@@ -64,9 +64,6 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return age;
     }
 
-    @Autowired
-    private UserRepository userRepository;
-
     public Page<User> getPaginatedUsers(int page, int size, List<User> users) {
         int start = page * size;
         int end = Math.min(start + size, users.size());

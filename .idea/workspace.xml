@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="dc282409-ec30-483b-acfd-ff0c43b45a01" name="Changes" comment="14.01-Check in non-code changes&#10;Check in changes only affecting folder structure">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/domain/user/UserServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -145,7 +144,8 @@
       <workItem from="1768398863314" duration="524000" />
       <workItem from="1768412653126" duration="3095000" />
       <workItem from="1768416086654" duration="97000" />
-      <workItem from="1768416628667" duration="2559000" />
+      <workItem from="1768416628667" duration="2685000" />
+      <workItem from="1768462288589" duration="828000" />
     </task>
     <servers />
   </component>

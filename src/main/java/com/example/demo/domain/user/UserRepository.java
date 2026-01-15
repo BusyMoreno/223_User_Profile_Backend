@@ -12,7 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends AbstractRepository<User> {
   Optional<User> findByEmail(String email);
-  List<User> filterUsers(Integer minAge, Integer maxAge, String firstName, String lastName, Pageable pageable);
-
 
 }
