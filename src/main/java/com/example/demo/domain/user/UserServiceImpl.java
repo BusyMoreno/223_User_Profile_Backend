@@ -3,6 +3,7 @@ package com.example.demo.domain.user;
 import com.example.demo.core.generic.AbstractServiceImpl;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleService;
+import com.example.demo.domain.user.dto.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,13 +31,15 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
   private final PasswordEncoder passwordEncoder;
   private final RoleService roleService;
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
   @Autowired
-  public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, RoleService roleService, UserRepository userRepository) {
+  public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, RoleService roleService, UserRepository userRepository, UserMapper userMapper) {
     super(repository);
     this.passwordEncoder = passwordEncoder;
       this.roleService = roleService;
       this.userRepository = userRepository;
+      this.userMapper = userMapper;
   }
 
     @Override
@@ -99,6 +102,7 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return myPage.getContent();
     }
 
+
     public void deleteUserById(UUID id) {
         userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no user with this id: " + id.toString()));
         userRepository.deleteById(id);
@@ -130,5 +134,21 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     if (age < 13) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Age must be at least 13");
     }
+  }
+
+  public UserDTO getOwnProfile(String email) {
+    User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+    return userMapper.toDTO(user);
+  }
+
+  public UserDTO updateOwnProfile(String email, UserDTO userDTO){
+    User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+    validateAge(userDTO.getBirthDate());
+    user.setFirstName(userDTO.getFirstName());
+    user.setLastName(userDTO.getLastName());
+    user.setEmail(userDTO.getEmail());
+    user.setAddress(userDTO.getAddress());
+    user.setProfileImageUrl(userDTO.getProfileImageUrl());
+    return userMapper.toDTO(user);
   }
 }

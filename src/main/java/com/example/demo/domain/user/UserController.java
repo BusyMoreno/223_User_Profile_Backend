@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -102,4 +103,14 @@ public class UserController {
             .status(HttpStatus.CREATED)
             .body(profile);
   }
+
+    @GetMapping("/profile")
+    public UserDTO getProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        return userServiceImpl.getOwnProfile(userDetails.getUsername());
+    }
+
+    @PutMapping("/editUser")
+    public UserDTO updateProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserDTO dto) {
+        return userServiceImpl.updateOwnProfile(userDetails.getUsername(), dto);
+    }
 }
