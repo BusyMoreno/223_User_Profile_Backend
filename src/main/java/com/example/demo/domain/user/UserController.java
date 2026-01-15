@@ -76,7 +76,7 @@ public class UserController {
     //This function is an admin only function it is able to filter users based on age and name
     //The results are paginated and also sorted
     @GetMapping("/admin/search")
-    @PreAuthorize("hasAuthority('USER_READ')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> filterUsers(
             @RequestParam(required = false) Integer minAge,
             @RequestParam(required = false) Integer maxAge,
@@ -111,7 +111,7 @@ public class UserController {
     }
 
     @PutMapping("/editUser")
-    @PreAuthorize("hasAuthority('USER_MODIFY')")
+    @PreAuthorize("@userPermissionEvaluator.isOwner(authentication.principal.user, #id)")
     public UserDTO updateOwnProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserDTO dto) {
         return userServiceImpl.updateOwnProfile(userDetails.getUsername(), dto);
     }
