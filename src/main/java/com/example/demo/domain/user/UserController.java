@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +22,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;
-    private final UserMapper userMapper;
+  private final UserService userService;
+  private final UserMapper userMapper;
+  private final UserServiceImpl userServiceImpl;
 
-    @Autowired
-    public UserController(UserService userService, UserMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
+  @Autowired
+  public UserController(UserService userService, UserMapper userMapper, UserServiceImpl userServiceImpl) {
+    this.userService = userService;
+    this.userMapper = userMapper;
+    this.userServiceImpl = userServiceImpl;
+  }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> retrieveById(@PathVariable UUID id) {
@@ -89,4 +93,22 @@ public class UserController {
 
 
 
+  @DeleteMapping("/{id}")
+  @PreAuthorize("hasAuthority('USER_DELETE')")
+  public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
+    userService.deleteById(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @PostMapping("/edit")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<User> createProfile(
+          @AuthenticationPrincipal User user,
+          @Valid @RequestBody UserDTO dto
+  ) {
+    User profile = userServiceImpl.createProfile(user, dto);
+    return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(profile);
+  }
 }
