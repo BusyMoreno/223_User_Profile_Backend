@@ -60,13 +60,16 @@ public class UserController {
         return new ResponseEntity<>(userMapper.toDTO(user), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    //This function is an admin only function it is able to delete any user by ID
+    @DeleteMapping("/admin/{id}")
     @PreAuthorize("hasAuthority('USER_DELETE')")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
         userService.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    //This function is an admin only function it is able to filter users based on age and name
+    //The results are paginated and also sorted
     @GetMapping("/admin/search")
     @PreAuthorize("hasAuthority('USER_READ')")
     public ResponseEntity<List<UserDTO>> filterUsers(

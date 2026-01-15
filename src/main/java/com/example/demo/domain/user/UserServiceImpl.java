@@ -70,9 +70,6 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return new PageImpl<>(pagedList, PageRequest.of(page, size), users.size());
     }
 
-
-    //This method is going to filter users based on age and/or name
-    //This function is an admin only function
     public List<User> getFilteredPaginatedAndSortedUsers(
             @RequestParam(required = false) Integer minAge,
             @RequestParam(required = false) Integer maxAge,
