@@ -63,7 +63,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_DELETE')")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
-        userService.deleteById(id);
+        userService.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -75,7 +75,7 @@ public class UserController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "10") int size
     ) {
         List<User> users = userService.getFilteredPaginatedAndSortedUsers(
                 minAge, maxAge, firstName, lastName, page,size

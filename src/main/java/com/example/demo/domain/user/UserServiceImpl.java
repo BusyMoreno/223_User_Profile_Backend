@@ -3,11 +3,11 @@ package com.example.demo.domain.user;
 import com.example.demo.core.generic.AbstractServiceImpl;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl extends AbstractServiceImpl<User> implements UserService {
@@ -53,7 +52,7 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return save(user);
     }
 
-    //Show all users without any filter omn
+    //Show all users without any filter
     public List<User> findAll() {
         return repository.findAll();
     }
@@ -80,7 +79,7 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "10") int size
     ) {
         List<User> filteredList = repository.findAll()
                 .stream()
@@ -94,5 +93,11 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return myPage.getContent();
     }
 
+    private UserRepository userRepository;
+
+    public void deleteUserById(UUID id) {
+        userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no user with this id: " + id.toString()));
+        userRepository.deleteById(id);
+    }
 
 }

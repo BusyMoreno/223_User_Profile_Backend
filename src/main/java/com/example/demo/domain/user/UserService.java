@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService extends UserDetailsService, AbstractService<User> {
     User register(User user);
@@ -17,5 +18,8 @@ public interface UserService extends UserDetailsService, AbstractService<User> {
                                                  @RequestParam(required = false) String lastName,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "5") int size);
+
+    void deleteUserById(UUID id);
+
 
 }
