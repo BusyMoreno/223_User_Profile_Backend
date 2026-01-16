@@ -151,4 +151,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     user.setProfileImageUrl(userDTO.getProfileImageUrl());
     return userMapper.toDTO(user);
   }
+
+  @Override
+  public void deleteOwnProfileById(UUID id){
+    User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    userRepository.delete(user);
+  }
 }

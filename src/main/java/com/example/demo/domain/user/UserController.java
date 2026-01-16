@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Validated
 @RestController
@@ -114,5 +115,16 @@ public class UserController {
     @PreAuthorize("@userPermissionEvaluator.isOwner(authentication.principal.user, #id)")
     public UserDTO updateOwnProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserDTO dto) {
         return userServiceImpl.updateOwnProfile(userDetails.getUsername(), dto);
+    }
+
+    @DeleteMapping("/me")
+    @PreAuthorize(" hasAuthority('USER_DEACTIVATE')")
+    public ResponseEntity<Void> deleteOwnProfile(
+            @AuthenticationPrincipal UserDetailsImpl principal) {
+
+        UUID userId = principal.user().getId();
+        userServiceImpl.deleteOwnProfileById(userId);
+
+        return ResponseEntity.noContent().build();
     }
 }

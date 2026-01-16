@@ -21,5 +21,5 @@ public interface UserService extends UserDetailsService, AbstractService<User> {
 
     void deleteUserById(UUID id);
 
-
+    void deleteOwnProfileById(UUID id);
 }
