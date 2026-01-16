@@ -5,6 +5,7 @@ import com.example.demo.core.generic.AbstractDTO;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.example.demo.domain.userProfile.dto.UserProfileDTO;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,29 +27,15 @@ public class UserRegisterDTO extends AbstractDTO {
 
   private String password;
 
-  @NotBlank(message = "Address is mandatory")
-  private String address;
+  private UserProfileDTO profile;
 
-  @NotNull(message = "Birth date is mandatory")
-  @Past(message = "Birth date must be in the past")
-  private LocalDate birthDate;
-
-  @NotBlank(message = "Profile picture is mandatory")
-  @Pattern(
-          regexp = "https?://.*",
-          message = "Invalid URL"
-  )
-  private String profileImageUrl;
-
-  public UserRegisterDTO(UUID id, String firstName, String lastName, String email, String password, String address, LocalDate birthDate, String profileImageUrl) {
+  public UserRegisterDTO(UUID id, String firstName, String lastName, String email, String password, UserProfileDTO profile) {
     super(id);
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.password = password;
-    this.address = address;
-    this.birthDate = birthDate;
-    this.profileImageUrl = profileImageUrl;
+    this.profile = profile;
   }
 
 }
