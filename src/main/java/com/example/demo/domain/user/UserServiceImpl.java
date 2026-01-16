@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -95,26 +94,37 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return new PageImpl<>(pagedList, PageRequest.of(page, size), users.size());
     }
 
-    public List<User> getFilteredPaginatedAndSortedUsers(
-            @RequestParam(required = false) Integer minAge,
-            @RequestParam(required = false) Integer maxAge,
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        List<User> filteredList = repository.findAll()
-                .stream()
-                .filter(u -> firstName == null || u.getFirstName().equalsIgnoreCase(firstName))
-                .filter(u -> lastName == null || u.getLastName().equalsIgnoreCase(lastName))
-                .filter(u -> minAge == null || calculateAge(u.getProfile().getBirthDate()) >= minAge)
-                .filter(u -> maxAge == null || calculateAge(u.getProfile().getBirthDate()) <= maxAge).sorted(Comparator.comparing((User u) -> u.getProfile().getBirthDate()).thenComparing(User::getFirstName)).toList();
+  public List<User> getFilteredPaginatedAndSortedUsers(
+          Integer minAge,
+          Integer maxAge,
+          String firstName,
+          String lastName,
+          int page,
+          int size
+  ) {
+    String fName = (firstName == null || firstName.isBlank()) ? null : firstName.toLowerCase();
+    String lName = (lastName == null || lastName.isBlank()) ? null : lastName.toLowerCase();
 
-        Page<User> myPage = getPaginatedUsers(page, size, filteredList);
+    List<User> filteredList = repository.findAll()
+            .stream()
+            .filter(u -> fName == null || u.getFirstName().toLowerCase().startsWith(fName))
+            .filter(u -> lName == null || u.getLastName().toLowerCase().startsWith(lName))
+            .filter(u -> minAge == null || calculateAge(u.getBirthDate()) >= minAge)
+            .filter(u -> maxAge == null || calculateAge(u.getBirthDate()) <= maxAge)
+            .sorted(Comparator
+                    .comparing(User::getBirthDate)
+                    .thenComparing(User::getFirstName))
+            .toList();
 
-        return myPage.getContent();
+    int start = page * size;
+    int end = Math.min(start + size, filteredList.size());
+
+    if (start >= filteredList.size()) {
+      return List.of();
     }
 
+    return filteredList.subList(start, end);
+  }
 
     public void deleteUserById(UUID id) {
         userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no user with this id: " + id.toString()));
