@@ -4,7 +4,9 @@ import com.example.demo.core.generic.AbstractServiceImpl;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleService;
 import com.example.demo.domain.user.dto.UserMapper;
+import com.example.demo.domain.userProfile.UserProfile;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -49,19 +51,30 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
                 .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
-    @Override
-  public User register(User user) {
-    validateAge(user.getBirthDate());
-    user.setPassword(passwordEncoder.encode(user.getPassword()));
-    Role defaultRole=roleService.findById(UUID.fromString("d29e709c-0ff1-4f4c-a7ef-09f656c390f1"));//Default role
-    user.setRoles(Set.of(defaultRole));
-    return save(user);
-  }
   @Override
+  @Transactional
+  public User register(User user) {
+    validateAge(user.getProfile().getBirthDate());
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    Role defaultRole = roleService.findById(
+            UUID.fromString("d29e709c-0ff1-4f4c-a7ef-09f656c390f1")
+    );
+    user.setRoles(Set.of(defaultRole));
+    if (user.getProfile() != null) {
+      user.getProfile().setUser(user);
+    }
+    return userRepository.save(user);
+  }
+
+  @Override
+  @Transactional
   //This Method can be used for development and testing. the Password for the user will be set to "1234"
   public User registerUser(User user){
     user.setPassword(passwordEncoder.encode("1234"));
-    return save(user);
+    if (user.getProfile() != null) {
+      user.getProfile().setUser(user);
+    }
+    return userRepository.save(user);
   }
 
     //Show all users without any filter
@@ -94,8 +107,8 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
                 .stream()
                 .filter(u -> firstName == null || u.getFirstName().equalsIgnoreCase(firstName))
                 .filter(u -> lastName == null || u.getLastName().equalsIgnoreCase(lastName))
-                .filter(u -> minAge == null || calculateAge(u.getBirthDate()) >= minAge)
-                .filter(u -> maxAge == null || calculateAge(u.getBirthDate()) <= maxAge).sorted(Comparator.comparing(User::getBirthDate).thenComparing(User::getFirstName)).toList();
+                .filter(u -> minAge == null || calculateAge(u.getProfile().getBirthDate()) >= minAge)
+                .filter(u -> maxAge == null || calculateAge(u.getProfile().getBirthDate()) <= maxAge).sorted(Comparator.comparing((User u) -> u.getProfile().getBirthDate()).thenComparing(User::getFirstName)).toList();
 
         Page<User> myPage = getPaginatedUsers(page, size, filteredList);
 
@@ -108,23 +121,26 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         userRepository.deleteById(id);
     }
 
-  public User createProfile(User user, UserDTO userDTO){
-    if (userRepository.findByEmail(userDTO.getEmail()).isPresent()){
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Profile with this email already exists");
-    }
+  @Transactional
+  public User createProfile(UserDTO userDTO){
 
-    validateAge(userDTO.getBirthDate());
+    validateAge(userDTO.getProfile().getBirthDate());
 
-    User profile = new User();
-    profile.setEmail(userDTO.getEmail());
-    profile.setFirstName(userDTO.getFirstName());
-    profile.setLastName(userDTO.getLastName());
-    profile.setPassword(passwordEncoder.encode(user.getPassword()));
-    profile.setAddress(userDTO.getAddress());
-    profile.setBirthDate(userDTO.getBirthDate());
-    profile.setProfileImageUrl(userDTO.getProfileImageUrl());
+    User user = new User();
+    user.setEmail(userDTO.getEmail());
+    user.setFirstName(userDTO.getFirstName());
+    user.setLastName(userDTO.getLastName());
+    user.setPassword(passwordEncoder.encode("1234"));
 
-    return save(profile);
+    UserProfile profile = new UserProfile();
+    profile.setAddress(userDTO.getProfile().getAddress());
+    profile.setBirthDate(userDTO.getProfile().getBirthDate());
+    profile.setProfileImageUrl(userDTO.getProfile().getProfileImageUrl());
+
+    profile.setUser(user);
+    user.setProfile(profile);
+
+    return userRepository.save(user);
   }
 
   private void validateAge(LocalDate birthDate) {
@@ -141,14 +157,27 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     return userMapper.toDTO(user);
   }
 
-  public UserDTO updateOwnProfile(String email, UserDTO userDTO){
-    User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-    validateAge(userDTO.getBirthDate());
+  @Transactional
+  public UserDTO updateOwnProfile(UUID id, UserDTO userDTO){
+    User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    validateAge(userDTO.getProfile().getBirthDate());
     user.setFirstName(userDTO.getFirstName());
     user.setLastName(userDTO.getLastName());
     user.setEmail(userDTO.getEmail());
-    user.setAddress(userDTO.getAddress());
-    user.setProfileImageUrl(userDTO.getProfileImageUrl());
+
+    UserProfile profile = user.getProfile();
+    if (profile == null) {
+      profile = new UserProfile();
+      profile.setUser(user);
+      user.setProfile(profile);
+    }
+
+    profile.setAddress(userDTO.getProfile().getAddress());
+    profile.setBirthDate(userDTO.getProfile().getBirthDate());
+    profile.setProfileImageUrl(userDTO.getProfile().getProfileImageUrl());
+
+    userRepository.save(user);
+
     return userMapper.toDTO(user);
   }
 
