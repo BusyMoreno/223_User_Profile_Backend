@@ -109,10 +109,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
             .stream()
             .filter(u -> fName == null || u.getFirstName().toLowerCase().startsWith(fName))
             .filter(u -> lName == null || u.getLastName().toLowerCase().startsWith(lName))
-            .filter(u -> minAge == null || calculateAge(u.getBirthDate()) >= minAge)
-            .filter(u -> maxAge == null || calculateAge(u.getBirthDate()) <= maxAge)
+            .filter(u -> minAge == null || calculateAge(u.getProfile().getBirthDate()) >= minAge)
+            .filter(u -> maxAge == null || calculateAge(u.getProfile().getBirthDate()) <= maxAge)
             .sorted(Comparator
-                    .comparing(User::getBirthDate)
+                    .comparing((User u) -> u.getProfile().getBirthDate())
                     .thenComparing(User::getFirstName))
             .toList();
 
