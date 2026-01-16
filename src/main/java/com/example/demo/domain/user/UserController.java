@@ -7,6 +7,8 @@ import com.example.demo.domain.user.dto.UserRegisterDTO;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.demo.domain.userProfile.UserProfile;
+import com.example.demo.domain.userProfile.dto.UserProfileDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -99,7 +101,7 @@ public class UserController {
           @AuthenticationPrincipal User user,
           @Valid @RequestBody UserDTO dto
   ) {
-    User profile = userServiceImpl.createProfile(user, dto);
+    User profile = userServiceImpl.createProfile(dto);
     return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(profile);
@@ -111,10 +113,10 @@ public class UserController {
         return userServiceImpl.getOwnProfile(userDetails.getUsername());
     }
 
-    @PutMapping("/editUser")
+    @PutMapping("/editUser/{id}")
     @PreAuthorize("@userPermissionEvaluator.isOwner(authentication.principal.user, #id)")
-    public UserDTO updateOwnProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserDTO dto) {
-        return userServiceImpl.updateOwnProfile(userDetails.getUsername(), dto);
+    public UserDTO updateOwnProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserDTO dto, @PathVariable UUID id) {
+        return userServiceImpl.updateOwnProfile(id, dto);
     }
 
     @DeleteMapping("/me")
