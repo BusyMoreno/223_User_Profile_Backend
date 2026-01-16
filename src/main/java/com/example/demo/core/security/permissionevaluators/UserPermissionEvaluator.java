@@ -1,18 +1,29 @@
 package com.example.demo.core.security.permissionevaluators;
 
 import com.example.demo.domain.user.User;
+import com.example.demo.domain.user.UserRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
-@NoArgsConstructor
 public class UserPermissionEvaluator {
 
-  public boolean exampleEvaluator(User principal, UUID id) {
-    //your code here
-    return true;
+  private final UserRepository userRepository;
+
+  public UserPermissionEvaluator(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
+  public boolean isOwner(User principal, UUID elementId) {
+    return userRepository.findById(elementId)
+            .map(user -> user.getId().equals(principal.getId()))
+            .orElse(false);
   }
 
 }
+
+
+
+
