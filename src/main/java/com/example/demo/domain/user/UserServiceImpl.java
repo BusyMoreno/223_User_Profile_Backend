@@ -4,6 +4,7 @@ import com.example.demo.core.generic.AbstractServiceImpl;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleService;
 import com.example.demo.domain.user.dto.UserMapper;
+import com.example.demo.domain.user.dto.UserRegisterDTO;
 import com.example.demo.domain.userProfile.UserProfile;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -67,9 +68,9 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
 
   @Override
   @Transactional
-  //This Method can be used for development and testing. the Password for the user will be set to "1234"
+  //This Method can be used for development and testing.
   public User registerUser(User user){
-    user.setPassword(passwordEncoder.encode("1234"));
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
     if (user.getProfile() != null) {
       user.getProfile().setUser(user);
     }
@@ -132,20 +133,20 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     }
 
   @Transactional
-  public User createProfile(UserDTO userDTO){
+  public User createProfile(UserRegisterDTO userRegisterDTO) {
 
-    validateAge(userDTO.getProfile().getBirthDate());
+    validateAge(userRegisterDTO.getProfile().getBirthDate());
 
     User user = new User();
-    user.setEmail(userDTO.getEmail());
-    user.setFirstName(userDTO.getFirstName());
-    user.setLastName(userDTO.getLastName());
-    user.setPassword(passwordEncoder.encode("1234"));
+    user.setEmail(userRegisterDTO.getEmail());
+    user.setFirstName(userRegisterDTO.getFirstName());
+    user.setLastName(userRegisterDTO.getLastName());
+    user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
 
     UserProfile profile = new UserProfile();
-    profile.setAddress(userDTO.getProfile().getAddress());
-    profile.setBirthDate(userDTO.getProfile().getBirthDate());
-    profile.setProfileImageUrl(userDTO.getProfile().getProfileImageUrl());
+    profile.setAddress(userRegisterDTO.getProfile().getAddress());
+    profile.setBirthDate(userRegisterDTO.getProfile().getBirthDate());
+    profile.setProfileImageUrl(userRegisterDTO.getProfile().getProfileImageUrl());
 
     profile.setUser(user);
     user.setProfile(profile);

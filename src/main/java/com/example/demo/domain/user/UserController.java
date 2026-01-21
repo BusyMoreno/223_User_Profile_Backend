@@ -109,9 +109,9 @@ public class UserController {
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<User> createProfile(
           @AuthenticationPrincipal User user,
-          @Valid @RequestBody UserDTO dto
+          @Valid @RequestBody UserRegisterDTO userRegisterDTO
   ) {
-    User profile = userServiceImpl.createProfile(dto);
+    User profile = userServiceImpl.createProfile(userRegisterDTO);
     return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(profile);
