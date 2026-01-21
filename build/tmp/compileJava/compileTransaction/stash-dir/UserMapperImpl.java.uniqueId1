@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-14T14:55:11+0100",
+    date = "2026-01-16T11:10:34+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.13.jar, environment: Java 18.0.2 (Amazon.com Inc.)"
 )
 @Component
@@ -32,6 +32,9 @@ public class UserMapperImpl implements UserMapper {
         user.setFirstName( dto.getFirstName() );
         user.setLastName( dto.getLastName() );
         user.setEmail( dto.getEmail() );
+        user.setAddress( dto.getAddress() );
+        user.setBirthDate( dto.getBirthDate() );
+        user.setProfileImageUrl( dto.getProfileImageUrl() );
         user.setRoles( roleDTOSetToRoleSet( dto.getRoles() ) );
 
         return user;
@@ -78,6 +81,9 @@ public class UserMapperImpl implements UserMapper {
         userDTO.setLastName( BO.getLastName() );
         userDTO.setEmail( BO.getEmail() );
         userDTO.setRoles( roleSetToRoleDTOSet( BO.getRoles() ) );
+        userDTO.setAddress( BO.getAddress() );
+        userDTO.setBirthDate( BO.getBirthDate() );
+        userDTO.setProfileImageUrl( BO.getProfileImageUrl() );
 
         return userDTO;
     }
@@ -123,6 +129,9 @@ public class UserMapperImpl implements UserMapper {
         user.setLastName( dto.getLastName() );
         user.setEmail( dto.getEmail() );
         user.setPassword( dto.getPassword() );
+        user.setAddress( dto.getAddress() );
+        user.setBirthDate( dto.getBirthDate() );
+        user.setProfileImageUrl( dto.getProfileImageUrl() );
 
         return user;
     }

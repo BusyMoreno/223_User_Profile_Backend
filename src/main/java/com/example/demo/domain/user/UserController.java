@@ -63,23 +63,33 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_MODIFY') && @userPermissionEvaluator.exampleEvaluator(authentication.principal.user,#id)")
-    public ResponseEntity<UserDTO> updateById(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateById(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
         User user = userService.updateById(id, userMapper.fromDTO(userDTO));
         return new ResponseEntity<>(userMapper.toDTO(user), HttpStatus.OK);
     }
 
-    //This function is an admin only function it is able to delete any user by ID
-    @DeleteMapping("/admin/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_DEACTIVATE')")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
-        userService.deleteUserById(id);
+        userService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @RestController
+    @RequestMapping("/roles")
+    @PreAuthorize("hasAuthority('USER_READ')")
+    public class RoleController {
+
+        @GetMapping
+        public List<String> getAllRoles() {
+            return List.of("USER", "ADMIN");
+        }
     }
 
     //This function is an admin only function it is able to filter users based on age and name
     //The results are paginated and also sorted
     @GetMapping("/admin/search")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('USER_READ')")
     public ResponseEntity<List<UserDTO>> filterUsers(
             @RequestParam(required = false) Integer minAge,
             @RequestParam(required = false) Integer maxAge,
@@ -96,7 +106,7 @@ public class UserController {
     }
 
   @PostMapping("/edit")
-  @PreAuthorize("hasAuthority('USER_CREATE')")
+  @PreAuthorize("hasRole('USER')")
   public ResponseEntity<User> createProfile(
           @AuthenticationPrincipal User user,
           @Valid @RequestBody UserDTO dto

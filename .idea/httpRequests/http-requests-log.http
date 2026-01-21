@@ -1,0 +1,22 @@
+PUT http://localhost:8080/user/edit/user
+Content-Type: application/json
+Content-Length: 142
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "firstName": "",
+  "lastName": "",
+  "email": "",
+  "roles": [],
+  "address": "",
+  "birthDate": "",
+  "profileImageUrl": "",
+  "id": ""
+}
+
+<> 2026-01-16T152655.403.html
+
+###
+
