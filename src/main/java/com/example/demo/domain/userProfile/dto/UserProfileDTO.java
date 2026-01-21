@@ -16,14 +16,11 @@ import java.time.LocalDate;
 @Setter
 public class UserProfileDTO {
 
-    @NotBlank(message = "Address is mandatory")
     private String address;
 
-    @NotNull(message = "Birth date is mandatory")
     @Past(message = "Birth date must be in the past")
     private LocalDate birthDate;
 
-    @NotBlank(message = "Profile picture is mandatory")
     @Pattern(
             regexp = "https?://.*",
             message = "Invalid URL"
