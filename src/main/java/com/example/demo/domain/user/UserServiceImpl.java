@@ -68,9 +68,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
 
   @Override
   @Transactional
-  //This Method can be used for development and testing.
   public User registerUser(User user){
-    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    if (user.getPassword() != null && !user.getPassword().isBlank()) {
+      user.setPassword(passwordEncoder.encode(user.getPassword()));
+    }
     if (user.getProfile() != null) {
       user.getProfile().setUser(user);
     }
