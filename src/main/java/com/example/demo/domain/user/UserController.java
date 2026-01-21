@@ -11,6 +11,7 @@ import com.example.demo.domain.userProfile.UserProfile;
 import com.example.demo.domain.userProfile.dto.UserProfileDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 
 @Validated
 @RestController
@@ -90,7 +95,7 @@ public class UserController {
     //The results are paginated and also sorted
     @GetMapping("/admin/search")
     @PreAuthorize("hasAuthority('USER_READ')")
-    public ResponseEntity<List<UserDTO>> filterUsers(
+    public ResponseEntity<Page<UserDTO>> filterUsers(
             @RequestParam(required = false) Integer minAge,
             @RequestParam(required = false) Integer maxAge,
             @RequestParam(required = false) String firstName,
@@ -98,11 +103,20 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        List<User> users = userService.getFilteredPaginatedAndSortedUsers(
-                minAge, maxAge, firstName, lastName, page,size
-        );
+        Pageable pageable = PageRequest.of(page, size);
 
-        return ResponseEntity.ok(userMapper.toDTOs(users));
+        Page<User> usersPage =
+                userService.getFilteredPaginatedAndSortedUsers(
+                        minAge,
+                        maxAge,
+                        firstName,
+                        lastName,
+                        pageable
+                );
+
+        Page<UserDTO> dtoPage = usersPage.map(userMapper::toDTO);
+
+        return ResponseEntity.ok(dtoPage);
     }
 
   @PostMapping("/edit")

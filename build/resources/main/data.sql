@@ -56,3 +56,37 @@ VALUES
         'https://example.com/tyler.png'
     )
     ON CONFLICT DO NOTHING;
+
+-- create 30 test users
+INSERT INTO users (id, email, first_name, last_name, password)
+SELECT
+    gen_random_uuid(),
+    'user' || gs || '@example.com'        AS email,
+    'FirstName' || gs                     AS first_name,
+    'LastName' || gs                      AS last_name,
+    '$2a$10$TM3PAYG3b.H98cbRrHqWa.BM7YyCqV92e/kUTBfj85AjayxGZU7d6' AS password
+FROM generate_series(1, 30) gs
+    ON CONFLICT DO NOTHING;
+
+-- assign DEFAULT role to all users who don't have a role yet
+INSERT INTO users_role (users_id, role_id)
+SELECT
+    u.id,
+    'd29e709c-0ff1-4f4c-a7ef-09f656c390f1' -- DEFAULT role id
+FROM users u
+         LEFT JOIN users_role ur ON ur.users_id = u.id
+WHERE ur.users_id IS NULL
+    ON CONFLICT DO NOTHING;
+
+-- create profiles for users without profile
+INSERT INTO user_profiles (id, user_id, address, birth_date, profile_image_url)
+SELECT
+    gen_random_uuid(),
+    u.id,
+    'Test Street ' || row_number() OVER (),
+        DATE '1995-01-01' + (random() * 8000)::int,
+        'https://example.com/avatar.png'
+FROM users u
+         LEFT JOIN user_profiles up ON up.user_id = u.id
+WHERE up.user_id IS NULL
+    ON CONFLICT DO NOTHING;

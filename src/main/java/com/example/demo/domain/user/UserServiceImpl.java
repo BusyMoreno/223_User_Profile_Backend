@@ -18,6 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -88,23 +91,21 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return age;
     }
 
-    public Page<User> getPaginatedUsers(int page, int size, List<User> users) {
-        int start = page * size;
-        int end = Math.min(start + size, users.size());
-        List<User> pagedList = users.subList(start, end);
-        return new PageImpl<>(pagedList, PageRequest.of(page, size), users.size());
-    }
-
-  public List<User> getFilteredPaginatedAndSortedUsers(
+  @Override
+  public Page<User> getFilteredPaginatedAndSortedUsers(
           Integer minAge,
           Integer maxAge,
           String firstName,
           String lastName,
-          int page,
-          int size
+          Pageable pageable
   ) {
-    String fName = (firstName == null || firstName.isBlank()) ? null : firstName.toLowerCase();
-    String lName = (lastName == null || lastName.isBlank()) ? null : lastName.toLowerCase();
+    String fName = (firstName == null || firstName.isBlank())
+            ? null
+            : firstName.toLowerCase();
+
+    String lName = (lastName == null || lastName.isBlank())
+            ? null
+            : lastName.toLowerCase();
 
     List<User> filteredList = repository.findAll()
             .stream()
@@ -117,17 +118,18 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
                     .thenComparing(User::getFirstName))
             .toList();
 
-    int start = page * size;
-    int end = Math.min(start + size, filteredList.size());
+    int start = (int) pageable.getOffset();
+    int end = Math.min(start + pageable.getPageSize(), filteredList.size());
 
-    if (start >= filteredList.size()) {
-      return List.of();
-    }
+    List<User> pageContent =
+            start >= filteredList.size()
+                    ? List.of()
+                    : filteredList.subList(start, end);
 
-    return filteredList.subList(start, end);
+    return new PageImpl<>(pageContent, pageable, filteredList.size());
   }
 
-    public void deleteUserById(UUID id) {
+  public void deleteUserById(UUID id) {
         userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no user with this id: " + id.toString()));
         userRepository.deleteById(id);
     }
