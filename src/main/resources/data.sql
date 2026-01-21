@@ -68,11 +68,11 @@ SELECT
 FROM generate_series(1, 30) gs
     ON CONFLICT DO NOTHING;
 
--- assign DEFAULT role to all users who don't have a role yet
+-- assign USER role to all users who don't have a role yet
 INSERT INTO users_role (users_id, role_id)
 SELECT
     u.id,
-    'd29e709c-0ff1-4f4c-a7ef-09f656c390f1' -- DEFAULT role id
+    'c6aee32d-8c35-4481-8b3e-a876a39b0c02' -- USER role id
 FROM users u
          LEFT JOIN users_role ur ON ur.users_id = u.id
 WHERE ur.users_id IS NULL

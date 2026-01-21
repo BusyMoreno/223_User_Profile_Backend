@@ -59,10 +59,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
   public User register(User user) {
     validateAge(user.getProfile().getBirthDate());
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    Role defaultRole = roleService.findById(
-            UUID.fromString("d29e709c-0ff1-4f4c-a7ef-09f656c390f1")
+    Role userRole = roleService.findById(
+            UUID.fromString("c6aee32d-8c35-4481-8b3e-a876a39b0c02")
     );
-    user.setRoles(Set.of(defaultRole));
+    user.setRoles(Set.of(userRole));
     if (user.getProfile() != null) {
       user.getProfile().setUser(user);
     }
@@ -145,6 +145,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     user.setFirstName(userRegisterDTO.getFirstName());
     user.setLastName(userRegisterDTO.getLastName());
     user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+    Role userRole = roleService.findById(
+            UUID.fromString("c6aee32d-8c35-4481-8b3e-a876a39b0c02")
+    );
+    user.setRoles(Set.of(userRole));
 
     UserProfile profile = new UserProfile();
     profile.setAddress(userRegisterDTO.getProfile().getAddress());
