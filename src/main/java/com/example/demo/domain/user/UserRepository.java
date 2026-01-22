@@ -3,6 +3,7 @@ package com.example.demo.domain.user;
 import com.example.demo.core.generic.AbstractRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 
 import org.springframework.stereotype.Repository;

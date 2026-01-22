@@ -5,6 +5,8 @@ import com.example.demo.domain.authority.dto.AuthorityDTO;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.dto.RoleDTO;
 import com.example.demo.domain.user.User;
+import com.example.demo.domain.userProfile.UserProfile;
+import com.example.demo.domain.userProfile.dto.UserProfileDTO;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-14T14:55:11+0100",
+    date = "2026-01-22T13:26:53+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.13.jar, environment: Java 18.0.2 (Amazon.com Inc.)"
 )
 @Component
@@ -33,6 +35,7 @@ public class UserMapperImpl implements UserMapper {
         user.setLastName( dto.getLastName() );
         user.setEmail( dto.getEmail() );
         user.setRoles( roleDTOSetToRoleSet( dto.getRoles() ) );
+        user.setProfile( userProfileDTOToUserProfile( dto.getProfile() ) );
 
         return user;
     }
@@ -78,6 +81,7 @@ public class UserMapperImpl implements UserMapper {
         userDTO.setLastName( BO.getLastName() );
         userDTO.setEmail( BO.getEmail() );
         userDTO.setRoles( roleSetToRoleDTOSet( BO.getRoles() ) );
+        userDTO.setProfile( userProfileToUserProfileDTO( BO.getProfile() ) );
 
         return userDTO;
     }
@@ -123,6 +127,7 @@ public class UserMapperImpl implements UserMapper {
         user.setLastName( dto.getLastName() );
         user.setEmail( dto.getEmail() );
         user.setPassword( dto.getPassword() );
+        user.setProfile( userProfileDTOToUserProfile( dto.getProfile() ) );
 
         return user;
     }
@@ -180,6 +185,20 @@ public class UserMapperImpl implements UserMapper {
         return set1;
     }
 
+    protected UserProfile userProfileDTOToUserProfile(UserProfileDTO userProfileDTO) {
+        if ( userProfileDTO == null ) {
+            return null;
+        }
+
+        UserProfile userProfile = new UserProfile();
+
+        userProfile.setAddress( userProfileDTO.getAddress() );
+        userProfile.setBirthDate( userProfileDTO.getBirthDate() );
+        userProfile.setProfileImageUrl( userProfileDTO.getProfileImageUrl() );
+
+        return userProfile;
+    }
+
     protected AuthorityDTO authorityToAuthorityDTO(Authority authority) {
         if ( authority == null ) {
             return null;
@@ -231,5 +250,19 @@ public class UserMapperImpl implements UserMapper {
         }
 
         return set1;
+    }
+
+    protected UserProfileDTO userProfileToUserProfileDTO(UserProfile userProfile) {
+        if ( userProfile == null ) {
+            return null;
+        }
+
+        UserProfileDTO userProfileDTO = new UserProfileDTO();
+
+        userProfileDTO.setAddress( userProfile.getAddress() );
+        userProfileDTO.setBirthDate( userProfile.getBirthDate() );
+        userProfileDTO.setProfileImageUrl( userProfile.getProfileImageUrl() );
+
+        return userProfileDTO;
     }
 }

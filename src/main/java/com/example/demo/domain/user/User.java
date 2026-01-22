@@ -7,13 +7,9 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+
+import com.example.demo.domain.userProfile.UserProfile;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,31 +35,42 @@ public class User extends AbstractEntity {
   @Column(name = "password")
   private String password;
 
-  @Column(name = "address")
-  private String address;
-
-  @Column(name = "birthDate")
-  private LocalDate birthDate;
-
-  @Column(name = "profileImageUrl")
-  private String profileImageUrl;
-
-
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "users_role", joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
              inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Set<Role> roles = new HashSet<>();
 
-  public User(UUID id, String firstName, String lastName, String email, String password, Set<Role> roles, String profileImageUrl, LocalDate birthDate, String address) {
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private UserProfile profile;
+
+  @PrePersist
+  public void logNewUserAttempt() {
+    System.out.println("Attempting to add new user with username: " + getEmail());
+  }
+
+  @PostPersist
+  public void logNewUserAdded() {
+    System.out.println("Added user: " + getEmail());
+  }
+
+  @PreUpdate
+  public void logUpdate() {
+    System.out.println("User is being updated: " + getId());
+  }
+
+  @PreRemove
+  public void logDelete() {
+    System.out.println("User is being deleted: " + getId());
+  }
+
+  public User(UUID id, String firstName, String lastName, String email, String password, Set<Role> roles, UserProfile profile) {
     super(id);
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.password = password;
     this.roles = roles;
-    this.profileImageUrl = profileImageUrl;
-    this.birthDate = birthDate;
-    this.address = address;
+    this.profile = profile;
   }
 
 }
