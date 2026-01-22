@@ -19,6 +19,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
@@ -39,15 +40,33 @@ public class WebSecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http.authorizeHttpRequests(
-        requests -> requests.requestMatchers(HttpMethod.POST, "/user/login", "/user/register", "/user/registerUser").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/v3/api-docs","/v3/api-docs/swagger-config","/swagger-ui/*").permitAll()
-                            .anyRequest().authenticated())
-            .addFilterAfter(new JWTAuthenticationFilter(new AntPathRequestMatcher("/user/login", "POST"),
-                    authenticationManager(), jwtProperties), UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(new JWTAuthorizationFilter(userService, jwtProperties),
-                    UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    return http
+            .authorizeHttpRequests(requests -> requests
+                    .requestMatchers(HttpMethod.POST, "/user/login", "/user/register", "/user/registerUser").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/v3/api-docs","/v3/api-docs/swagger-config","/swagger-ui/*").permitAll()
+                    .anyRequest().authenticated()
+            )
+            .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessHandler((request, response, authentication) -> {
+                      response.setStatus(HttpServletResponse.SC_OK);
+                    })
+            )
+            .addFilterAfter(
+                    new JWTAuthenticationFilter(
+                            new AntPathRequestMatcher("/user/login", "POST"),
+                            authenticationManager(),
+                            jwtProperties
+                    ),
+                    UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterAfter(
+                    new JWTAuthorizationFilter(userService, jwtProperties),
+                    UsernamePasswordAuthenticationFilter.class
+            )
+            .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .build();

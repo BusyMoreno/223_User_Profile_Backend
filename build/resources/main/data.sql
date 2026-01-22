@@ -16,12 +16,15 @@ VALUES ('d29e709c-0ff1-4f4c-a7ef-09f656c390f1', 'DEFAULT'),
 ('c6aee32d-8c35-4481-8b3e-a876a39b0c02', 'USER')
 ON CONFLICT DO NOTHING;
 
---AUTHORITIES
+-- AUTHORITIES
 INSERT INTO authority(id, name)
-VALUES ('2ebf301e-6c61-4076-98e3-2a38b31daf86', 'USER_CREATE'),
-('76d2cbf6-5845-470e-ad5f-2edb9e09a868', 'USER_READ'),
-('21c942db-a275-43f8-bdd6-d048c21bf5ab', 'USER_DEACTIVATE')
-ON CONFLICT DO NOTHING;
+VALUES
+    ('2ebf301e-6c61-4076-98e3-2a38b31daf86', 'USER_CREATE'),
+    ('76d2cbf6-5845-470e-ad5f-2edb9e09a868', 'USER_READ'),
+    ('21c942db-a275-43f8-bdd6-d048c21bf5ab', 'USER_DEACTIVATE'),
+    ('b964fc23-9fea-4ba2-9000-94fad5f0dbe0', 'USER_MODIFY'),
+    ('6e12227a-f6bf-4529-86d1-df9b41fe28fb', 'USER_DELETE_OWN_PROFILE')
+    ON CONFLICT DO NOTHING;
 
 --assign roles to users
 insert into users_role (users_id, role_id)
@@ -38,24 +41,49 @@ VALUES ('d29e709c-0ff1-4f4c-a7ef-09f656c390f1', '2ebf301e-6c61-4076-98e3-2a38b31
 ('c6aee32d-8c35-4481-8b3e-a876a39b0c02', '21c942db-a275-43f8-bdd6-d048c21bf5ab')
  ON CONFLICT DO NOTHING;
 
--- USER PROFILES
-INSERT INTO user_profiles (id, user_id, address, birth_date, profile_image_url)
+-- USER role gets USER_READ
+INSERT INTO role_authority(role_id, authority_id)
+VALUES (
+           'c6aee32d-8c35-4481-8b3e-a876a39b0c02', -- USER role
+           '76d2cbf6-5845-470e-ad5f-2edb9e09a868'  -- USER_READ
+       )
+    ON CONFLICT DO NOTHING;
+
+-- USER permissions
+INSERT INTO role_authority(role_id, authority_id)
 VALUES
     (
-        gen_random_uuid(),
-        'ba804cb9-fa14-42a5-afaf-be488742fc54',
-        'Secret Street 007',
-        '1980-01-01',
-        'https://example.com/bond.png'
+        'c6aee32d-8c35-4481-8b3e-a876a39b0c02',
+        'b964fc23-9fea-4ba2-9000-94fad5f0dbe0' -- USER_MODIFY
     ),
     (
-        gen_random_uuid(),
-        '0d8fa44c-54fd-4cd0-ace9-2a7da57992de',
-        'Fight Club Street',
-        '1990-05-10',
-        'https://example.com/tyler.png'
+        'c6aee32d-8c35-4481-8b3e-a876a39b0c02',
+        '6e12227a-f6bf-4529-86d1-df9b41fe28fb' -- USER_DELETE_OWN_PROFILE
     )
     ON CONFLICT DO NOTHING;
+
+-- ADMIN gets all authorities
+INSERT INTO role_authority(role_id, authority_id)
+SELECT
+    'ab505c92-7280-49fd-a7de-258e618df074', -- ADMIN role
+    a.id
+FROM authority a
+    ON CONFLICT DO NOTHING;
+
+
+-- USER PROFILES
+-- create profiles for users without profile (age 18–60)
+INSERT INTO user_profiles (id, user_id, address, birth_date, profile_image_url)
+SELECT
+    gen_random_uuid(),
+    u.id,
+    'Test Street ' || row_number() OVER (),
+    CURRENT_DATE - ((18 + floor(random() * 42)) * INTERVAL '1 year'),
+    'https://example.com/avatar.png'
+FROM users u
+         LEFT JOIN user_profiles up ON up.user_id = u.id
+WHERE up.user_id IS NULL
+ON CONFLICT DO NOTHING;
 
 -- create 30 test users
 INSERT INTO users (id, email, first_name, last_name, password)
@@ -68,25 +96,26 @@ SELECT
 FROM generate_series(1, 30) gs
     ON CONFLICT DO NOTHING;
 
--- assign DEFAULT role to all users who don't have a role yet
+-- assign USER role to all users who don't have a role yet
 INSERT INTO users_role (users_id, role_id)
 SELECT
     u.id,
-    'd29e709c-0ff1-4f4c-a7ef-09f656c390f1' -- DEFAULT role id
+    'c6aee32d-8c35-4481-8b3e-a876a39b0c02' -- USER role id
 FROM users u
          LEFT JOIN users_role ur ON ur.users_id = u.id
 WHERE ur.users_id IS NULL
     ON CONFLICT DO NOTHING;
 
--- create profiles for users without profile
+-- create profiles for users without profile (age >= 18)
 INSERT INTO user_profiles (id, user_id, address, birth_date, profile_image_url)
 SELECT
     gen_random_uuid(),
     u.id,
     'Test Street ' || row_number() OVER (),
-        DATE '1995-01-01' + (random() * 8000)::int,
-        'https://example.com/avatar.png'
+    CURRENT_DATE - ((18 + floor(random() * 42)) * INTERVAL '1 year'),
+    'https://example.com/avatar.png'
 FROM users u
          LEFT JOIN user_profiles up ON up.user_id = u.id
 WHERE up.user_id IS NULL
-    ON CONFLICT DO NOTHING;
+ON CONFLICT DO NOTHING;
+

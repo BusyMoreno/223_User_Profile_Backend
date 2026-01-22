@@ -106,15 +106,16 @@ FROM users u
 WHERE ur.users_id IS NULL
     ON CONFLICT DO NOTHING;
 
--- create profiles for users without profile
+-- create profiles for users without profile (age >= 18)
 INSERT INTO user_profiles (id, user_id, address, birth_date, profile_image_url)
 SELECT
     gen_random_uuid(),
     u.id,
     'Test Street ' || row_number() OVER (),
-        DATE '1995-01-01' + (random() * 8000)::int,
-        'https://example.com/avatar.png'
+    CURRENT_DATE - ((18 + floor(random() * 42)) * INTERVAL '1 year'),
+    'https://example.com/avatar.png'
 FROM users u
          LEFT JOIN user_profiles up ON up.user_id = u.id
 WHERE up.user_id IS NULL
-    ON CONFLICT DO NOTHING;
+ON CONFLICT DO NOTHING;
+
