@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RestControllerAdvice
 @AllArgsConstructor
@@ -73,6 +74,25 @@ public class CustomGlobalExceptionHandler {
     return new ResponseError().setTimeStamp(LocalDate.now())
                               .setErrors(errors)
                               .build();
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public ResponseError handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+
+    Map<String, String> errors = new HashMap<>();
+
+    // PostgreSQL unique constraint on users.email
+    if (ex.getMessage() != null && ex.getMessage().contains("users_email_key")) {
+      errors.put("email", "This email address is already in use.");
+    } else {
+      errors.put("database", "Data integrity violation.");
+    }
+
+    return new ResponseError()
+            .setTimeStamp(LocalDate.now())
+            .setErrors(errors)
+            .build();
   }
 
   @ExceptionHandler({RuntimeException.class})

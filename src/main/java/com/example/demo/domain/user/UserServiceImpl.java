@@ -29,6 +29,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl extends AbstractServiceImpl<User> implements UserService {
@@ -96,6 +98,11 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
         return age;
     }
 
+  private int extractNumber(String value) {
+    Matcher m = Pattern.compile("(\\d+)$").matcher(value);
+    return m.find() ? Integer.parseInt(m.group(1)) : 0;
+  }
+
   @Override
   public Page<User> getFilteredPaginatedAndSortedUsers(
           Integer minAge,
@@ -119,8 +126,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
             .filter(u -> minAge == null || calculateAge(u.getProfile().getBirthDate()) >= minAge)
             .filter(u -> maxAge == null || calculateAge(u.getProfile().getBirthDate()) <= maxAge)
             .sorted(Comparator
-                    .comparing((User u) -> u.getProfile().getBirthDate())
-                    .thenComparing(User::getFirstName))
+                    .comparing(
+                            (User u) -> extractNumber(u.getLastName())
+                    )
+            )
             .toList();
 
     int start = (int) pageable.getOffset();

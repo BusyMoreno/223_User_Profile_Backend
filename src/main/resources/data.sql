@@ -72,23 +72,18 @@ FROM authority a
 
 
 -- USER PROFILES
+-- create profiles for users without profile (age 18–60)
 INSERT INTO user_profiles (id, user_id, address, birth_date, profile_image_url)
-VALUES
-    (
-        gen_random_uuid(),
-        'ba804cb9-fa14-42a5-afaf-be488742fc54',
-        'Secret Street 007',
-        '1980-01-01',
-        'https://example.com/bond.png'
-    ),
-    (
-        gen_random_uuid(),
-        '0d8fa44c-54fd-4cd0-ace9-2a7da57992de',
-        'Fight Club Street',
-        '1990-05-10',
-        'https://example.com/tyler.png'
-    )
-    ON CONFLICT DO NOTHING;
+SELECT
+    gen_random_uuid(),
+    u.id,
+    'Test Street ' || row_number() OVER (),
+    CURRENT_DATE - ((18 + floor(random() * 42)) * INTERVAL '1 year'),
+    'https://example.com/avatar.png'
+FROM users u
+         LEFT JOIN user_profiles up ON up.user_id = u.id
+WHERE up.user_id IS NULL
+ON CONFLICT DO NOTHING;
 
 -- create 30 test users
 INSERT INTO users (id, email, first_name, last_name, password)
