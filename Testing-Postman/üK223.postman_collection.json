@@ -1,0 +1,1022 @@
+{
+  "info": {
+    "_postman_id": "2093ec26-2ccc-44c3-a589-90ae6031bae3",
+    "name": "üK223",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51732019",
+    "_collection_link": "https://go.postman.co/collection/43313937-2093ec26-2ccc-44c3-a589-90ae6031bae3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CreateValidUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response is JSON\", () => {\r",
+              "    pm.response.to.have.header(\"Content-Type\");\r",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+              "        .to.include(\"application/json\");\r",
+              "});\r",
+              "\r",
+              "    const body = pm.response.json();\r",
+              "\r",
+              "pm.test(\"User has ID\", () => {\r",
+              "    pm.expect(body.id).to.exist;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Email correct\", () => {\r",
+              "    pm.expect(body.email).to.eql(\"max.mustermann@example.com\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"No password in response\", () => {\r",
+              "    pm.expect(body.password).to.be.undefined;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEIn1dLCJpYXQiOjE3NjkwMDA4NTgsImV4cCI6MTc2OTEwMDg1OCwiaXNzIjoidWsyMjMifQ.hD3VxrN78l1HvmOw-VbCR7EXCGZlLCgupYz5Q9nxXH8EcYyYtUFN6WH-004FKSSH",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"Max\",\r\n  \"lastName\": \"Mustermann\",\r\n  \"email\": \"max.mustermann@example.com\",\r\n  \"password\": \"meinSicheresPasswort123\",\r\n  \"profile\": {\r\n    \"address\": \"Musterstraße 1, 8000 Zürich\",\r\n    \"birthDate\": \"1995-05-20\",\r\n    \"profileImageUrl\": \"https://example.com/avatar.jpg\" \r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CreateInvalidUserEmailAlreadyExists",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 409\", function () {\r",
+              "    pm.response.to.have.status(409);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEIn1dLCJpYXQiOjE3NjkwMDA4NTgsImV4cCI6MTc2OTEwMDg1OCwiaXNzIjoidWsyMjMifQ.hD3VxrN78l1HvmOw-VbCR7EXCGZlLCgupYz5Q9nxXH8EcYyYtUFN6WH-004FKSSH",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"Max\",\r\n  \"lastName\": \"Mustermann\",\r\n  \"email\": \"admin@example.com\",\r\n  \"password\": \"meinSicheresPasswort123\",\r\n  \"profile\": {\r\n    \"address\": \"Musterstraße 1, 8000 Zürich\",\r\n    \"birthDate\": \"1995-05-20\",\r\n    \"profileImageUrl\": \"https://example.com/avatar.jpg\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CreateInvalidUserAge",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"Max\",\r\n  \"lastName\": \"Mustermann\",\r\n  \"email\": \"max.muster@example.com\",\r\n  \"password\": \"meinSicheresPasswort123\",\r\n  \"profile\": {\r\n    \"address\": \"Musterstraße 1, 8000 Zürich\",\r\n    \"birthDate\": \"2024-05-20\",\r\n    \"profileImageUrl\": \"https://example.com/avatar.jpg\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CreateInvalidUserUrl",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"Max\",\r\n  \"lastName\": \"Mustermann\",\r\n  \"email\": \"max.musterfrau@example.com\",\r\n  \"password\": \"meinSicheresPasswort123\",\r\n  \"profile\": {\r\n    \"address\": \"Musterstraße 1, 8000 Zürich\",\r\n    \"birthDate\": \"2000-05-20\",\r\n    \"profileImageUrl\": \"hts://example.com/avatar.jpg\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DeleteUserAsAdmin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifSx7ImF1dGhvcml0eSI6IlVTRVJfUkVBRCJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX01PRElGWSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEX09XTl9QUk9GSUxFIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX1JFQURfT1dOX1BST0ZJTEUifSx7ImF1dGhvcml0eSI6IlVTRVJfTU9ESUZZIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifV0sImlhdCI6MTc2OTA4NjYzMiwiZXhwIjoxNzY5MTg2NjMyLCJpc3MiOiJ1azIyMyJ9.DCiG7s3GWfKKdfMDIbnvTdbq3DlPOzLw4DlCxGOLt0A0BpzXFFhYo56ncP9NqtlK",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/user/5248b9aa-e46c-4ce6-af8b-f3488c74c86d",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "5248b9aa-e46c-4ce6-af8b-f3488c74c86d"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DeleteRandomUserAsNonAdmin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX01PRElGWSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEX09XTl9QUk9GSUxFIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9XSwic3ViIjoiOGI3YzJjNWYtOWEzZS00ZTZhLWJjOGEtMWYwZDliOGU3YzExIiwiaWF0IjoxNzY5MDg3NDY0LCJleHAiOjE3NjkxODc0NjQsImlzcyI6InVrMjIzIn0.4Ql8hssMAD2Dx5zuNA-HSywjmd7G_xAkz2Y9uM680OU4TjOHKI8yN0r9RTBPj7Rm",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/user/5248b9aa-e46c-4ce6-af8b-f3488c74c86d",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "5248b9aa-e46c-4ce6-af8b-f3488c74c86d"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UserTriesEdit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfREVMRVRFX09XTl9QUk9GSUxFIn0seyJhdXRob3JpdHkiOiJVU0VSX1JFQUQifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9XSwic3ViIjoiOGI3YzJjNWYtOWEzZS00ZTZhLWJjOGEtMWYwZDliOGU3YzExIiwiaWF0IjoxNzY5MDc5MTg3LCJleHAiOjE3NjkxNzkxODcsImlzcyI6InVrMjIzIn0.yiq-vgwFKjbPKsRwKBjoBBGswF0wJS4F_GGsfrUyS9_uc4AaNxtEEAk_Swvb-n0h",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"test\",\r\n  \"lastName\": \"test\",\r\n  \"email\": \"test@example.com\",\r\n  \"profile\": {\r\n    \"address\": \"Updated Street\",\r\n    \"birthDate\": \"1995-01-01\",\r\n    \"profileImageUrl\": null\r\n  }\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/editUser/8b7c2c5f-9a3e-4e6a-bc8a-1f0d9b8e7c11",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "editUser",
+            "8b7c2c5f-9a3e-4e6a-bc8a-1f0d9b8e7c11"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UserTriesInvalidEdit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfREVMRVRFX09XTl9QUk9GSUxFIn0seyJhdXRob3JpdHkiOiJVU0VSX1JFQUQifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9XSwic3ViIjoiOGI3YzJjNWYtOWEzZS00ZTZhLWJjOGEtMWYwZDliOGU3YzExIiwiaWF0IjoxNzY5MDc5MTg3LCJleHAiOjE3NjkxNzkxODcsImlzcyI6InVrMjIzIn0.yiq-vgwFKjbPKsRwKBjoBBGswF0wJS4F_GGsfrUyS9_uc4AaNxtEEAk_Swvb-n0h",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"test\",\r\n  \"lastName\": \"test\",\r\n  \"email\": \"test@example.com\",\r\n  \"profile\": {\r\n    \"address\": \"Updated Street\",\r\n    \"birthDate\": \"2025-01-01\",\r\n    \"profileImageUrl\": null\r\n  }\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/editUser/8b7c2c5f-9a3e-4e6a-bc8a-1f0d9b8e7c11",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "editUser",
+            "8b7c2c5f-9a3e-4e6a-bc8a-1f0d9b8e7c11"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SeeOwnProfile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response contains email\", () => {\r",
+              "  pm.expect(pm.response.json()).to.have.property(\"email\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI4YjdjMmM1Zi05YTNlLTRlNmEtYmM4YS0xZjBkOWI4ZTdjMTEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX1JFQURfT1dOX1BST0ZJTEUifSx7ImF1dGhvcml0eSI6IlVTRVJfTU9ESUZZIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9XSwiaWF0IjoxNzY5MDg2MTc5LCJleHAiOjE3NjkxODYxNzksImlzcyI6InVrMjIzIn0.APi6C9LTCvM_C_omUx_ku-P4B2el3OQyu_FE9vHY07rUV1HSQZ9fHUD92Ysdxbwc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/profile",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SeeAllProfilesAsAdmin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifSx7ImF1dGhvcml0eSI6IlVTRVJfUkVBRCJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX01PRElGWSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEX09XTl9QUk9GSUxFIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX1JFQURfT1dOX1BST0ZJTEUifSx7ImF1dGhvcml0eSI6IlVTRVJfTU9ESUZZIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifV0sImlhdCI6MTc2OTA4NjYzMiwiZXhwIjoxNzY5MTg2NjMyLCJpc3MiOiJ1azIyMyJ9.DCiG7s3GWfKKdfMDIbnvTdbq3DlPOzLw4DlCxGOLt0A0BpzXFFhYo56ncP9NqtlK",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SeeAllProfilesAsUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 403\", function () {\r",
+              "    pm.response.to.have.status(403);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "    @PreAuthorize(\"hasAuthority('USER_DEACTIVATE')\")",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "LoginAsUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"example@example.com\",\r\n  \"password\": \"1234\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "LoginAsAdmin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"admin@example.com\",\r\n  \"password\": \"1234\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/user/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SearchAsAdmin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "pm.test(\"Response is paged\", () => {\r",
+              "  pm.expect(pm.response.json()).to.have.property(\"content\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfUkVBRCJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifSx7ImF1dGhvcml0eSI6IlVTRVJfQ1JFQVRFIn1dLCJpYXQiOjE3NjkwODQ0MDksImV4cCI6MTc2OTE4NDQwOSwiaXNzIjoidWsyMjMifQ.hyYh6eMTyIvwVVyaH9gBk9NmsAtFtyPBXqHu5yxxK_IHy7mvTSRevU2Z1ceQzQpd",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/user/admin/search?page=0&size=10",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "admin",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SearchAsAdminWithAge",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is paged\", () => {",
+              "    pm.expect(pm.response.json()).to.have.property(\"content\");",
+              "});",
+              "",
+              "pm.test(\"All users have age within 15-25 range\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    const currentYear = new Date().getFullYear();",
+              "    ",
+              "    jsonData.content.forEach((user, index) => {",
+              "        const birthDate = new Date(user.profile.birthDate);",
+              "        const age = currentYear - birthDate.getFullYear();",
+              "        pm.expect(age, `User ${user.firstName} (index ${index}) age`).to.be.within(15, 25);",
+              "    });",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfUkVBRCJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifSx7ImF1dGhvcml0eSI6IlVTRVJfQ1JFQVRFIn1dLCJpYXQiOjE3NjkwODQ0MDksImV4cCI6MTc2OTE4NDQwOSwiaXNzIjoidWsyMjMifQ.hyYh6eMTyIvwVVyaH9gBk9NmsAtFtyPBXqHu5yxxK_IHy7mvTSRevU2Z1ceQzQpd",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/user/admin/search?minAge=15&maxAge=25",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "admin",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "minAge",
+              "value": "15"
+            },
+            {
+              "key": "maxAge",
+              "value": "25"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SearchAsAdminWithName",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is paged\", () => {",
+              "    pm.expect(pm.response.json()).to.have.property(\"content\");",
+              "});",
+              "",
+              "pm.test(\"All users have firstName containing 'FirstName1'\", () => {",
+              "    pm.response.json().content.forEach(u => {",
+              "        pm.expect(u.firstName).to.include(\"FirstName1\");",
+              "    });",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn0seyJhdXRob3JpdHkiOiJVU0VSX0RFTEVURV9PV05fUFJPRklMRSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9SRUFEIn0seyJhdXRob3JpdHkiOiJVU0VSX01PRElGWSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUxFVEVfT1dOX1BST0ZJTEUifSx7ImF1dGhvcml0eSI6IlVTRVJfUkVBRCJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfQ1JFQVRFIn1dLCJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJpYXQiOjE3NjkwODUyNTUsImV4cCI6MTc2OTE4NTI1NSwiaXNzIjoidWsyMjMifQ.ykx0VejQcwOxvN273nUzL-ZM6T4eHThU6fpQ6QDbvDEYPvwHGPRH96ksfmzMgbHt",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/user/admin/search?firstName=FirstName17&page=0&size=10",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "admin",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "firstName",
+              "value": "FirstName17"
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SearchAsUserWithName",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI4YjdjMmM1Zi05YTNlLTRlNmEtYmM4YS0xZjBkOWI4ZTdjMTEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9ERUxFVEVfT1dOX1BST0ZJTEUifSx7ImF1dGhvcml0eSI6IlVTRVJfUkVBRCJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9XSwiaWF0IjoxNzY5MDg0OTQyLCJleHAiOjE3NjkxODQ5NDIsImlzcyI6InVrMjIzIn0.2JZLzhm0KqSwXYRLnbrvv0ipxkKQw5yL_--XVj2TEC5EtqEFZKcILlYcXSZEKZ8k",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/user/admin/search?&page=0&size=10",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "admin",
+            "search"
+          ],
+          "query": [
+            {
+              "key": null,
+              "value": null
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DeleteOwnProfile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI4YjdjMmM1Zi05YTNlLTRlNmEtYmM4YS0xZjBkOWI4ZTdjMTEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9NT0RJRlkifSx7ImF1dGhvcml0eSI6IlVTRVJfREVBQ1RJVkFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUxFVEVfT1dOX1BST0ZJTEUifSx7ImF1dGhvcml0eSI6IlVTRVJfUkVBRCJ9XSwiaWF0IjoxNzY5MDgwMTY4LCJleHAiOjE3NjkxODAxNjgsImlzcyI6InVrMjIzIn0.d3cKV1z_mTgqrA1VZ2OMUgKhki_G_WQ3MWMpbnJq2EUTLbrg-1THjgWtpV33sYeq",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/user/me",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
