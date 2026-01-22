@@ -103,6 +103,9 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     return m.find() ? Integer.parseInt(m.group(1)) : 0;
   }
 
+    //This function is an admin only function 
+    // The method is able to filter users based on age and name
+    //The results are paginated and also sorted
   @Override
   public Page<User> getFilteredPaginatedAndSortedUsers(
           Integer minAge,
@@ -111,6 +114,8 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
           String lastName,
           Pageable pageable
   ) {
+
+    // Convert firstName and lastName to lowercase for case-insensitive comparison
     String fName = (firstName == null || firstName.isBlank())
             ? null
             : firstName.toLowerCase();
@@ -151,6 +156,7 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
   @Transactional
   public User createProfile(UserRegisterDTO userRegisterDTO) {
 
+// Validate age user has to be at least 13 years old
     validateAge(userRegisterDTO.getProfile().getBirthDate());
 
     User user = new User();
@@ -158,6 +164,8 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     user.setFirstName(userRegisterDTO.getFirstName());
     user.setLastName(userRegisterDTO.getLastName());
     user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+
+    // Assign USER role "User" to new registered users 
     Role userRole = roleService.findById(
             UUID.fromString("c6aee32d-8c35-4481-8b3e-a876a39b0c02")
     );
@@ -167,6 +175,9 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     profile.setAddress(userRegisterDTO.getProfile().getAddress());
     profile.setBirthDate(userRegisterDTO.getProfile().getBirthDate());
     profile.setProfileImageUrl(userRegisterDTO.getProfile().getProfileImageUrl());
+
+    // If profile image URL is blank, set it to null to avoid storing empty strings
+    // PP is optional
     if (profile.getProfileImageUrl() != null && profile.getProfileImageUrl().isBlank()) {
       profile.setProfileImageUrl(null);
     }
@@ -194,6 +205,8 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
   @Transactional
   public UserDTO updateOwnProfile(UUID id, UserDTO userDTO){
     User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+    // User cannot update age to be less than 13
     validateAge(userDTO.getProfile().getBirthDate());
     user.setFirstName(userDTO.getFirstName());
     user.setLastName(userDTO.getLastName());

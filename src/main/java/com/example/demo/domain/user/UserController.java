@@ -90,8 +90,7 @@ public class UserController {
         }
     }
 
-    //This function is an admin only function it is able to filter users based on age and name
-    //The results are paginated and also sorted
+// This is an admin only function 
     @GetMapping("/admin/search")
     @PreAuthorize("hasAuthority('USER_READ')")
     public ResponseEntity<Page<UserDTO>> filterUsers(
@@ -145,6 +144,7 @@ public class UserController {
         return userServiceImpl.updateOwnProfile(id, dto);
     }
 
+// User can only delete own profile this is a user specific function
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('USER_DELETE_OWN_PROFILE')")
     public ResponseEntity<Void> deleteOwnProfile(@Valid
