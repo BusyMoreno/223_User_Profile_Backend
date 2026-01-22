@@ -47,6 +47,7 @@ public class UserController {
     }
 
     @GetMapping({"", "/"})
+    @PreAuthorize("hasAuthority('USER_READ')")
     public ResponseEntity<List<UserDTO>> retrieveAll() {
         List<User> users = userService.findAll();
         return new ResponseEntity<>(userMapper.toDTOs(users), HttpStatus.OK);
@@ -133,7 +134,7 @@ public class UserController {
   }
 
     @GetMapping("/profile")
-    @PreAuthorize("hasAuthority('USER_READ')")
+    @PreAuthorize("hasAuthority('USER_READ_OWN_PROFILE')")
     public UserDTO getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return userServiceImpl.getOwnProfile(userDetails.getUsername());
     }
@@ -146,7 +147,7 @@ public class UserController {
 
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('USER_DELETE_OWN_PROFILE')")
-    public ResponseEntity<Void> deleteOwnProfile(
+    public ResponseEntity<Void> deleteOwnProfile(@Valid
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
         UUID userId = principal.user().getId();
