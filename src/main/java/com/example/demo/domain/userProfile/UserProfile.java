@@ -3,6 +3,7 @@ package com.example.demo.domain.userProfile;
 import com.example.demo.core.generic.AbstractEntity;
 import com.example.demo.domain.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,10 @@ public class UserProfile extends AbstractEntity {
     private LocalDate birthDate;
 
     @Column(name="profile_image_url")
+    @Pattern(
+            regexp = "https?://.*",
+            message = "Invalid URL"
+    )
     private String profileImageUrl;
 
     @OneToOne

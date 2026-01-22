@@ -132,19 +132,19 @@ public class UserController {
   }
 
     @GetMapping("/profile")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('USER_READ')")
     public UserDTO getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return userServiceImpl.getOwnProfile(userDetails.getUsername());
     }
 
     @PutMapping("/editUser/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('USER_MODIFY')")
     public UserDTO updateOwnProfile(@Valid @RequestBody UserDTO dto, @PathVariable UUID id) {
         return userServiceImpl.updateOwnProfile(id, dto);
     }
 
     @DeleteMapping("/me")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('USER_DELETE_OWN_PROFILE')")
     public ResponseEntity<Void> deleteOwnProfile(
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
