@@ -43,6 +43,26 @@ public class User extends AbstractEntity {
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private UserProfile profile;
 
+  @PrePersist
+  public void logNewUserAttempt() {
+    System.out.println("Attempting to add new user with username: " + getEmail());
+  }
+
+  @PostPersist
+  public void logNewUserAdded() {
+    System.out.println("Added user: " + getEmail());
+  }
+
+  @PreUpdate
+  public void logUpdate() {
+    System.out.println("User is being updated: " + getId());
+  }
+
+  @PreRemove
+  public void logDelete() {
+    System.out.println("User is being deleted: " + getId());
+  }
+
   public User(UUID id, String firstName, String lastName, String email, String password, Set<Role> roles, UserProfile profile) {
     super(id);
     this.firstName = firstName;
