@@ -66,6 +66,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     if (user.getProfile() != null) {
       user.getProfile().setUser(user);
     }
+    if (user.getProfile().getProfileImageUrl() != null && user.getProfile().getProfileImageUrl().isBlank()) {
+      user.getProfile().setProfileImageUrl(null);
+    }
+
     return userRepository.save(user);
   }
 
@@ -154,6 +158,9 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     profile.setAddress(userRegisterDTO.getProfile().getAddress());
     profile.setBirthDate(userRegisterDTO.getProfile().getBirthDate());
     profile.setProfileImageUrl(userRegisterDTO.getProfile().getProfileImageUrl());
+    if (profile.getProfileImageUrl() != null && profile.getProfileImageUrl().isBlank()) {
+      profile.setProfileImageUrl(null);
+    }
 
     profile.setUser(user);
     user.setProfile(profile);
@@ -193,6 +200,12 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     profile.setAddress(userDTO.getProfile().getAddress());
     profile.setBirthDate(userDTO.getProfile().getBirthDate());
     profile.setProfileImageUrl(userDTO.getProfile().getProfileImageUrl());
+    profile.setProfileImageUrl(userDTO.getProfile().getProfileImageUrl());
+
+    if (profile.getProfileImageUrl() != null && profile.getProfileImageUrl().isBlank()) {
+      profile.setProfileImageUrl(null);
+    }
+
 
     userRepository.save(user);
 
